@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>低配贪吃蛇</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .wrapper {
+            margin: 0 auto;
+        }
+
+        .row {
+            height: 30px;
+        }
+
+        .col {
+            height: 30px;
+            width: 30px;
+            float: left;
+            box-sizing: border-box;
+            border: 1px solid black;
+        }
+
+        .snake {
+            background-color: black;
+        }
+
+        .food {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <p>score:
+            <span id="score">0</span>
+        </p>
+        <div id="map"></div>
+    </div>
+
+    <script>
+        var map = document.getElementById("map");
+        var score = document.getElementById("score");
+        var row = 15,
+            col = 15;
+        var allPosition = [];
+        for (var i = 0; i < row; i++) {
+            var rowdiv = document.createElement("div");
+            rowdiv.className = "row";
+            var rowArray = [];
+            map.appendChild(rowdiv);
+            for (var j = 0; j < col; j++) {
+                var coldiv = document.createElement("div");
+                coldiv.className = "col";
+                rowdiv.appendChild(coldiv);
+                rowArray.push(coldiv);
+            }
+            allPosition.push(rowArray);
+
+        }
+        var snake = [];
+        for (var i = 0; i < 3; i++) {
+            allPosition[0][i].classList.add("snake");
+            snake[i] = allPosition[0][i];
+        }
+
+        var direction = "right";
+        window.onkeyup = function (event) {
+            var event = event || window.event;
+            if(direction == "left" && event.keyCode == 39){
+                return;
+            }
+            if(direction == "right" && event.keyCode == 37){
+                return;
+            }
+            if(direction == "up" && event.keyCode == 40){
+                return;
+            }
+            if(direction == "down" && event.keyCode == 38){
+                return;
+            }
+            switch (event.keyCode) {
+                case 37: direction = "left"; break;
+                case 38: direction = "up"; break;
+                case 39: direction = "right"; break;
+                case 40: direction = "down"; break;
+            }
+        }
+        var foodX = 0,
+            foodY = 0;
+
+        function createFood() {
+            foodX = Math.floor(Math.random() * row);
+            foodY = Math.floor(Math.random() * col);
+            allPosition[foodX][foodY].classList.add("food");
+        }
+
+        var x = 0,
+            y = 2;
+        var scoreNum = 0;
+        function moveLogic() {
+            console.log(111);
+            switch (direction) {
+                case "left": y--; break;
+                case "up": x--; break;
+                case "right": y++; break;
+                case "down": x++; break;
+            }
+            if (x < 0 || y < 0 || x > row || y > col) {
+                alert("撞墙了智障");
+                clearInterval(timer);
+                return;
+            }
+            for (var i = 0; i < snake.length; i++) {
+                if (allPosition[x][y] == snake[i]) {
+                    alert("吃到自己啦智障");
+                    clearInterval(timer);
+                    return;
+                }
+            }
+            if (x == foodX && y == foodY) {
+                snake.push(allPosition[x][y]);
+                allPosition[x][y].classList.add("snake");
+                allPosition[x][y].classList.remove("food");
+                createFood();
+                scoreNum++;
+                score.innerHTML = scoreNum;
+            } else {
+                snake[0].classList.remove("snake");
+                snake.shift();
+                allPosition[x][y].classList.add("snake");
+                snake.push(allPosition[x][y]);
+            }
+
+
+        }
+        var timer = setInterval("moveLogic()", 500);
+        createFood();
+    </script>
+
+
+</body>
+
+</html>
